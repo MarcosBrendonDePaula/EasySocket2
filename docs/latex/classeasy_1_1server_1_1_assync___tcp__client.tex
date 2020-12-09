@@ -1,0 +1,72 @@
+\hypertarget{classeasy_1_1server_1_1_assync___tcp__client}{}\doxysection{easy\+::server\+::Assync\+\_\+\+Tcp\+\_\+client Class Reference}
+\label{classeasy_1_1server_1_1_assync___tcp__client}\index{easy::server::Assync\_Tcp\_client@{easy::server::Assync\_Tcp\_client}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a78804aed7bc241bb3456197050e0ee64}\label{classeasy_1_1server_1_1_assync___tcp__client_a78804aed7bc241bb3456197050e0ee64}} 
+{\bfseries Assync\+\_\+\+Tcp\+\_\+client} (\mbox{\hyperlink{classeasy_1_1server_1_1_assync___tcp___server}{Assync\+\_\+\+Tcp\+\_\+\+Server}} $\ast$server, std\+::map$<$ uint32\+\_\+t, std\+::vector$<$ \mbox{\hyperlink{classeasy_1_1_assync___tcp___module}{Assync\+\_\+\+Tcp\+\_\+\+Module}} $>$$>$ \&modules, uint32\+\_\+t id)
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a49bebe6c10b36188c0ee0a9d41adc0fc}\label{classeasy_1_1server_1_1_assync___tcp__client_a49bebe6c10b36188c0ee0a9d41adc0fc}} 
+void \mbox{\hyperlink{classeasy_1_1server_1_1_assync___tcp__client_a49bebe6c10b36188c0ee0a9d41adc0fc}{init\+\_\+comunication}} ()
+\begin{DoxyCompactList}\small\item\em receiving std\+::thread initiator. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a8f391c3e921bb1cb21c0dafd87494b97}\label{classeasy_1_1server_1_1_assync___tcp__client_a8f391c3e921bb1cb21c0dafd87494b97}} 
+bool {\bfseries Send} (\mbox{\hyperlink{classeasy_1_1_tcp__client___buffer}{Tcp\+\_\+client\+\_\+\+Buffer}} input)
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_ab7a78abdcfaeaf05442ae1f7c9b025b9}\label{classeasy_1_1server_1_1_assync___tcp__client_ab7a78abdcfaeaf05442ae1f7c9b025b9}} 
+void {\bfseries Disconnect} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classeasy_1_1server_1_1_assync___tcp__client_aafa66e858fb15c6f0088a78c7bf5b13f}{recv\+\_\+loop}} (\mbox{\hyperlink{classeasy_1_1server_1_1_assync___tcp__client}{Assync\+\_\+\+Tcp\+\_\+client}} $\ast$Client)
+\begin{DoxyCompactList}\small\item\em recv loop to current client. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a9fb95a3125a09feb5fa3acecda0d705a}\label{classeasy_1_1server_1_1_assync___tcp__client_a9fb95a3125a09feb5fa3acecda0d705a}} 
+std\+::map$<$ uint32\+\_\+t, std\+::vector$<$ \mbox{\hyperlink{classeasy_1_1_assync___tcp___module}{Assync\+\_\+\+Tcp\+\_\+\+Module}} $>$ $>$ {\bfseries modules}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a41b6922511548a4a5ac9174783bb5ec3}\label{classeasy_1_1server_1_1_assync___tcp__client_a41b6922511548a4a5ac9174783bb5ec3}} 
+uint32\+\_\+t {\bfseries client\+\_\+socket}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_adf93332542e298ae424f2ac7f0b8dfb8}\label{classeasy_1_1server_1_1_assync___tcp__client_adf93332542e298ae424f2ac7f0b8dfb8}} 
+struct sockaddr\+\_\+in {\bfseries address}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_ac0d0aaa4271a2bd7dcb4bd1c477c5d1b}\label{classeasy_1_1server_1_1_assync___tcp__client_ac0d0aaa4271a2bd7dcb4bd1c477c5d1b}} 
+\mbox{\hyperlink{classeasy_1_1server_1_1_assync___tcp___server}{Assync\+\_\+\+Tcp\+\_\+\+Server}} $\ast$ {\bfseries server}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a1cc94d87ad7121e16bddaf104f95887b}\label{classeasy_1_1server_1_1_assync___tcp__client_a1cc94d87ad7121e16bddaf104f95887b}} 
+uint32\+\_\+t {\bfseries id}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a9e074175738687637622074e034eaa46}\label{classeasy_1_1server_1_1_assync___tcp__client_a9e074175738687637622074e034eaa46}} 
+int {\bfseries none}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a4ea1026f0fea3861f04d5b6860f11181}\label{classeasy_1_1server_1_1_assync___tcp__client_a4ea1026f0fea3861f04d5b6860f11181}} 
+int {\bfseries max\+\_\+buffer}
+\item 
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_a142a506a2ceec7b522d91b7240cf2e63}\label{classeasy_1_1server_1_1_assync___tcp__client_a142a506a2ceec7b522d91b7240cf2e63}} 
+std\+::vector$<$ \mbox{\hyperlink{classeasy_1_1_tcp__client___buffer}{Tcp\+\_\+client\+\_\+\+Buffer}} $>$ {\bfseries buffers}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classeasy_1_1server_1_1_assync___tcp__client_aafa66e858fb15c6f0088a78c7bf5b13f}\label{classeasy_1_1server_1_1_assync___tcp__client_aafa66e858fb15c6f0088a78c7bf5b13f}} 
+\index{easy::server::Assync\_Tcp\_client@{easy::server::Assync\_Tcp\_client}!recv\_loop@{recv\_loop}}
+\index{recv\_loop@{recv\_loop}!easy::server::Assync\_Tcp\_client@{easy::server::Assync\_Tcp\_client}}
+\doxysubsubsection{\texorpdfstring{recv\_loop()}{recv\_loop()}}
+{\footnotesize\ttfamily void easy\+::server\+::\+Assync\+\_\+\+Tcp\+\_\+client\+::recv\+\_\+loop (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classeasy_1_1server_1_1_assync___tcp__client}{Assync\+\_\+\+Tcp\+\_\+client}} $\ast$}]{Client }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+recv loop to current client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Client} & current client address. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+easysocket.\+hpp\end{DoxyCompactItemize}
