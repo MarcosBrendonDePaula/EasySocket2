@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+include/main.cpp
+EasySocket2.rar

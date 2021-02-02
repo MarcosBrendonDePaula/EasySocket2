@@ -8,10 +8,7 @@
 #include <thread>
 #include <memory>
 #include <fstream>
-
-#ifdef WIN32
 #include <WinSock2.h>
-#endif
 
 namespace easy {
 
@@ -39,6 +36,7 @@ namespace easy {
                 memset(&address,0x0,sizeof(address));
             }
     };
+
     class Assync_Tcp_Module {
     public:
         void(*run)(std::map<std::string,void*>&);
@@ -91,7 +89,6 @@ namespace easy {
             class Assync_Tcp_client {
                 public:
 
-
                     /*!
                     * \fn Assync_Tcp_client(std::map<uint32_t,std::vector<Assync_Tcp_Module>> &modules,uint32_t id)
                     * \brief method constructor.
@@ -100,20 +97,14 @@ namespace easy {
                     Assync_Tcp_client(Assync_Tcp_Server *server,std::map<uint32_t,std::vector<Assync_Tcp_Module>> &modules,uint32_t id);
                     std::map<uint32_t,std::vector<Assync_Tcp_Module>> modules;
 
-                    ~Assync_Tcp_client();
-
-                    // uint32_t client_socket;
-                    // struct sockaddr_in address;
-
                     Basic_Socket addr;
-                    //functions
 
                     Assync_Tcp_Server *server;
                     /*!
-                    * \fn init_comunication();
+                    * \fn init_communication();
                     * \brief receiving std::thread initiator.
                     */
-                    void init_comunication();
+                    void init_communication();
 
                     /*!
                     * \fn MSG_Buffer(int max_buffer=1500);
@@ -127,6 +118,13 @@ namespace easy {
                     void Disconnect();
                     //static functions
                     
+                    uint32_t id;
+                    int max_buffer;
+                    std::vector<MSG_Buffer> buffers;
+                    
+                    ~Assync_Tcp_client();
+                private:
+
                     /*!
                     * \fn recv_loop(Assync_Tcp_client *Client);
                     * \brief recv loop to current client.
@@ -134,12 +132,6 @@ namespace easy {
                     */
                     static void recv_loop(Assync_Tcp_client *Client);
 
-                    
-
-                    uint32_t id;
-                    int max_buffer;
-                    std::vector<MSG_Buffer> buffers;
-                private:
                     bool connected;
                     std::thread loop_recv;
             };
@@ -171,13 +163,15 @@ namespace easy {
 
                     //static functions
 
+                private:
+
                     /*!
                     * \fn accept_function(Assync_Tcp_Server* Server)
                     * \brief accept loop.
                     * \param Server current adress Server.
                     */
                     static void accept_function(Assync_Tcp_Server* Server);
-                private:
+
                     bool listening;
                     uint32_t listen_socket;
                     struct sockaddr_in server_address;
@@ -250,11 +244,11 @@ namespace easy {
                     bool Send(MSG_Buffer buffer);
 
                     void use(Assync_Tcp_Module& module,int on_action);
-                    static void response_loop(Assync_Tcp_client* Client);
-
+                    
                     std::vector<MSG_Buffer> buffers;
                 private:
                     
+                    static void response_loop(Assync_Tcp_client* Client);
                     std::thread thread_loop;
                     std::string ip;
                     uint64_t port;
@@ -297,13 +291,7 @@ namespace easy {
         }
     }
     namespace utilities {
-        void emptyFunction(long x,long y);
-        template<typename type> 
-        bool tcp_send_var(Basic_Socket Socket,type* var);
-        template<typename type> 
-        bool tcp_recv_var(Basic_Socket Socket,type* var);
-        long tcp_send_file(Basic_Socket Socket, std::string path, long i_Bytes = 0L, long Packet_Size = 2000, void(*callback)(long,long) = emptyFunction);
-        long tcp_recive_file(Basic_Socket Socket,std::string path, long i_Bytes = 0L, long Packet_Size = 2000, void(*callback)(long,long) = emptyFunction);
+    
     }
 }
 #endif

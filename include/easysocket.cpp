@@ -46,8 +46,9 @@ namespace easy {
                 this->id = id;
             }
             
-            void Assync_Tcp_client::init_comunication() {
-                loop_recv = std::thread(Assync_Tcp_client::recv_loop,this); 
+            void Assync_Tcp_client::init_communication() {
+                loop_recv = std::thread(recv_loop,this);
+                loop_recv.detach();
             }
 
             bool Assync_Tcp_client::Send(MSG_Buffer data) {
@@ -158,7 +159,7 @@ namespace easy {
                     if(novo->addr.client_socket > 0) {
                         Server->clients.push_back(novo);
                         Server->clients.back()->max_buffer = Server->max_buffer;
-                        Server->clients.back()->init_comunication();
+                        Server->clients.back()->init_communication();
                         Server->id_count++;
                         std::map<std::string,void*> temp;
                         temp["client"] = Server->clients.back();
@@ -296,7 +297,7 @@ namespace easy {
                     return false;
                 }
                 
-                this->thread_loop = std::thread(Assync_Tcp_client::response_loop,this);
+                this->thread_loop = std::thread(response_loop,this);
                 this->thread_loop.detach();
 
                 std::map<std::string,void*> temp;
@@ -418,13 +419,9 @@ namespace easy {
 
         }
     }
+    
     namespace utilities {
         
-		void emptyFunction(long x,long y) {
-			x=x*1;
-			y=y*1;
-		}
-		
         template<typename type> 
         bool tcp_send_var(Basic_Socket Socket,type* var) {
         return (send(Socket.client_socket,(char*)var,sizeof(type),0)==sizeof(type))?true:false;
@@ -435,7 +432,7 @@ namespace easy {
             return (recv(Socket.client_socket,(char*)var,sizeof(type),0) == sizeof(type))?true:false;
         }
 
-        long tcp_send_file(Basic_Socket Socket, std::string path, long i_Bytes, long Packet_Size, void(*callback)(long,long)) {
+        long tcp_send_file(Basic_Socket Socket, std::string path, long i_Bytes = 0L, long Packet_Size = 2000, void(*callback)(long,long) = [](long a, long b){a=a*1;b=b*1;}) {
             std::fstream file(path,std::ios::in | std::ios::binary);
             file.seekg(0,std::ios::end);
             long bytes = file.tellg();
@@ -471,7 +468,7 @@ namespace easy {
             return A_bytes;
         }
 
-        long tcp_recive_file(Basic_Socket Socket,std::string path, long i_Bytes, long Packet_Size, void(*callback)(long,long) ) {
+        long tcp_recive_file(Basic_Socket Socket,std::string path, long i_Bytes = 0L, long Packet_Size = 2000, void(*callback)(long,long) = [](long a, long b){a=a*1;b=b*1;}) {
             
             long bytes = 0L;
             long A_bytes =  i_Bytes;
