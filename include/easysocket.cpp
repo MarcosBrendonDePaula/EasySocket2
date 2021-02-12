@@ -3,6 +3,7 @@
 
 
 namespace easy {
+    
     #ifdef WIN32
         bool Win_init_Sock = false;
         WSADATA SockDll;
@@ -13,24 +14,26 @@ namespace easy {
         this->run=run;
     }
 
-    MSG_Buffer::MSG_Buffer(std::string str,int max_buffer) {
+    MSG_Buffer::MSG_Buffer(std::string str,long max_buffer) {
         this->max_buffer = max_buffer;
-        Buffer = new char[this->max_buffer];
+        Buffer.resize(this->max_buffer,0x0);
         this->actual_buffer = str.size();
-        memcpy(Buffer,str.c_str(),this->actual_buffer);
+        memcpy(&Buffer[0],str.c_str(),this->actual_buffer);
     }
     
-
-    MSG_Buffer::MSG_Buffer(int max_buffer) {
+    MSG_Buffer::MSG_Buffer(long max_buffer) {
         this->max_buffer = max_buffer;
-        this->Buffer = new char[this->max_buffer];
-        memset(this->Buffer,0x0,sizeof(char) * max_buffer);
+        Buffer.resize(this->max_buffer,0x0);
     }
 
-    const std::string MSG_Buffer::to_string() {
+    MSG_Buffer::~MSG_Buffer() {
+        Buffer.clear();
+    }
+
+    const std::string MSG_Buffer::to_str() {
         if(this->actual_buffer<1)
             return std::string("");
-        return std::string(this->Buffer,(size_t)this->actual_buffer);
+        return std::string(&Buffer[0],(size_t)this->actual_buffer);
     }
 
     namespace server {
@@ -60,14 +63,17 @@ namespace easy {
                 for(auto i:this->modules[ONSEND]) {
                     i.run(temp);
                 }
-                if(send(this->addr.client_socket,buffer.Buffer,buffer.actual_buffer,0)!=data.actual_buffer)
+
+                if(send(this->addr.client_socket,&buffer.Buffer[0],buffer.actual_buffer,0) == -1){
                     return false;
+                }
+                
                 return true;
             }
 
             MSG_Buffer Assync_Tcp_client::recv_buffer() {
                 MSG_Buffer temp(this->max_buffer);
-                temp.actual_buffer = recv(this->addr.client_socket,temp.Buffer,temp.max_buffer,0);
+                temp.actual_buffer = recv(this->addr.client_socket,&temp.Buffer[0],temp.max_buffer,0);
                 return temp;
             }
 
@@ -77,23 +83,25 @@ namespace easy {
 
             void Assync_Tcp_client::recv_loop(Assync_Tcp_client *Client) {
                 while(true) {
-
+                    
                     auto novo = Client->recv_buffer();
                     if(novo.actual_buffer<=0) {
-                        delete novo.Buffer;
                         break;
                     }
                         
 
-                    Client->buffers.push_back(novo);
+                    //Client->buffers.push_back(novo);
                     std::map<std::string,void*> temp;
+					bool exit = false;
                     temp["client"] = Client;
                     temp["server"] = Client->server;
-                    temp["message"] = &Client->buffers.back();
+                    temp["message"] = &/*Client->buffers.back()*/novo;
+					temp["exit"] = &exit;
                     for(auto i:Client->modules[ONRECEIVE]) {
-                        i.run(temp);
+                        if(!exit)
+							i.run(temp);
                     }
-                    delete novo.Buffer; 
+                    
                 }
                 
                 for(auto i:Client->modules[ONDISCONNECT]) {
@@ -121,7 +129,7 @@ namespace easy {
                 modules[on_action].push_back(module);
             }
 
-            void Assync_Tcp_Server::Listen(int port,int max_buffer,int domain) {
+            void Assync_Tcp_Server::Listen(int port,int max_buffer,int domain,bool join) {
                 this->port = port;
                 this->max_buffer = max_buffer;
                 this->domain = domain;
@@ -146,7 +154,10 @@ namespace easy {
                 }
 
                 accept_loop = std::thread(accept_function,this);
-                this->accept_loop.detach();
+                if(!join)
+                    this->accept_loop.detach();
+                else
+                    this->accept_loop.join();
             }
 
 
@@ -172,13 +183,13 @@ namespace easy {
 
 
             void Tcp_Client::send_buffer(MSG_Buffer buffer) {
-                send(this->sock_data.client_socket,buffer.Buffer,buffer.actual_buffer,0);
+                send(this->sock_data.client_socket,&buffer.Buffer[0],buffer.actual_buffer,0);
                 return;
             }
 
             MSG_Buffer Tcp_Client::recv_buffer() {
                 MSG_Buffer temp(this->max_buffer);
-                temp.actual_buffer = recv(this->sock_data.client_socket,temp.Buffer,temp.max_buffer,0);
+                temp.actual_buffer = recv(this->sock_data.client_socket,&temp.Buffer[0],temp.max_buffer,0);
                 return temp;
             }
             Tcp_Server::Tcp_Server() {
@@ -252,14 +263,14 @@ namespace easy {
 
             //falta_cmd
             void UDP_Server::SendTo(Basic_Socket& Client,MSG_Buffer& Buffer) {
-                sendto(Sock_Data.client_socket,Buffer.Buffer,Buffer.actual_buffer,0,(const struct sockaddr *) &Client.address,Client.address_size);
+                sendto(Sock_Data.client_socket,&Buffer.Buffer[0],Buffer.actual_buffer,0,(const struct sockaddr *) &Client.address,Client.address_size);
             }
             
             //falta_cmd
             Basic_Socket UDP_Server::RecvData(MSG_Buffer& Buffer) {
                 Basic_Socket CLIENT;
                 Buffer.actual_buffer = recvfrom(Sock_Data.client_socket,
-                                                Buffer.Buffer,
+                                                &Buffer.Buffer[0],
                                                 Buffer.max_buffer,
                                                 0,
                                                 (struct sockaddr*) &CLIENT.address,
@@ -317,7 +328,7 @@ namespace easy {
                 for(auto i:this->modules[ONSEND]) {
                     i.run(temp);
                 }
-                uint64_t result = send(this->listen_socket,buffer.Buffer,buffer.actual_buffer,0);
+                uint64_t result = send(this->listen_socket,&buffer.Buffer[0],buffer.actual_buffer,0);
                 if(result==(uint64_t)buffer.actual_buffer)
                     return true;
                 return false;
@@ -328,7 +339,7 @@ namespace easy {
                 uint64_t max_buffer = Client->max_buffer;
                 while(true) {
                     auto _new=MSG_Buffer(max_buffer);
-                    _new.actual_buffer = recv(sock,_new.Buffer,max_buffer,0);
+                    _new.actual_buffer = recv(sock,&_new.Buffer[0],max_buffer,0);
                     if(_new.actual_buffer<0) return;
                     Client->buffers.push_back(_new);
                     std::map<std::string,void*> temp;
@@ -365,13 +376,13 @@ namespace easy {
             }
 
             void Tcp_Client::send_buffer(MSG_Buffer buffer) {
-                send(this->sock_data.client_socket,buffer.Buffer,buffer.actual_buffer,0);
+                send(this->sock_data.client_socket,&buffer.Buffer[0],buffer.actual_buffer,0);
                 return;
             }
 
             MSG_Buffer Tcp_Client::recv_buffer() {
                 MSG_Buffer temp(this->max_buffer);
-                temp.actual_buffer = recv(this->sock_data.client_socket,temp.Buffer,temp.max_buffer,0);
+                temp.actual_buffer = recv(this->sock_data.client_socket,&temp.Buffer[0],temp.max_buffer,0);
                 if(temp.actual_buffer<0)
                     connected = false;
                 return temp;
@@ -401,14 +412,14 @@ namespace easy {
 
             //falta_cmd
             void UDP_Client::SendTo(Basic_Socket& Client,MSG_Buffer& Buffer) {
-                sendto(Client_Data.client_socket,Buffer.Buffer,Buffer.actual_buffer,0,(const struct sockaddr *) &Client.address,Client.address_size);
+                sendto(Client_Data.client_socket,&Buffer.Buffer[0],Buffer.actual_buffer,0,(const struct sockaddr *) &Client.address,Client.address_size);
             }
             
             //falta_cmd
             Basic_Socket UDP_Client::RecvData(MSG_Buffer& Buffer) {
                 Basic_Socket CLIENT;
                 Buffer.actual_buffer = recvfrom(Client_Data.client_socket,
-                                                Buffer.Buffer,
+                                                &Buffer.Buffer[0],
                                                 Buffer.max_buffer,
                                                 0,
                                                 (struct sockaddr*) &CLIENT.address,

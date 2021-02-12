@@ -1,6 +1,6 @@
 #pragma once
-#ifndef EASY_INC
-#define EASY_INC
+#ifndef INCLUDE_EASY_SOCKET2
+#define INCLUDE_EASY_SOCKET2
 
 #include <iostream>
 #include <vector>
@@ -17,6 +17,7 @@ namespace easy {
         extern WSADATA SockDll;
         extern int dll_version[2];
     #endif
+
 
     #define ONCONNECT 1
     #define ONDISCONNECT 2
@@ -36,7 +37,6 @@ namespace easy {
                 memset(&address,0x0,sizeof(address));
             }
     };
-
     class Assync_Tcp_Module {
     public:
         void(*run)(std::map<std::string,void*>&);
@@ -51,31 +51,33 @@ namespace easy {
     class MSG_Buffer {
         public:
             /*!
-            * \fn MSG_Buffer(int max_buffer=1500)
+            * \fn MSG_Buffer(long max_buffer=1500)
             * \brief method constructor.
             * \param max_buffer maximum characters in buffer std::vector.
             */
-            MSG_Buffer(int max_buffer=1500);
+            MSG_Buffer(long max_buffer=1500);
             
-
             /*!
-            * \fn MSG_Buffer(std::string str,int max_buffer=1500)
+            * \fn MSG_Buffer(std::string str,long max_buffer=1500)
             * \brief method constructor.
             * \param str auto allocator std::string to MSG_Buffer
             * \param max_buffer maximum characters in buffer std::vector
             */
-            MSG_Buffer(std::string str,int max_buffer=1500);
+            MSG_Buffer(std::string str,long max_buffer=1500);
             
             /**
              * @brief parse buffer to std::string
              * 
              * @return const std::string 
              */
-            const std::string to_string();
+            const std::string to_str();
 
-            int max_buffer;
-            int actual_buffer;
-            char *Buffer;
+
+            ~MSG_Buffer();
+            long max_buffer;
+            long actual_buffer;
+            std::vector<char> Buffer;
+            //char *Buffer;
         private:
 
     };
@@ -120,8 +122,8 @@ namespace easy {
                     
                     uint32_t id;
                     int max_buffer;
-                    std::vector<MSG_Buffer> buffers;
-                    
+                    //std::vector<MSG_Buffer> buffers;
+                    bool ready;
                     ~Assync_Tcp_client();
                 private:
 
@@ -159,7 +161,7 @@ namespace easy {
                     * \param max_buffer maximum buffer size.
                     * \param domain ip type.
                     */
-                    void Listen(int port = 3333 , int max_buffer = 1500,int domain = IPV4);
+                    void Listen(int port = 3333 , int max_buffer = 1500,int domain = IPV4, bool join = false);
 
                     //static functions
 
@@ -227,8 +229,6 @@ namespace easy {
 
                     void SendTo(Basic_Socket& Socket,MSG_Buffer& Buffer);
                     Basic_Socket RecvData(MSG_Buffer& Buffer);
-                    
-
                 private:
                     Basic_Socket Sock_Data;
             };
@@ -239,7 +239,7 @@ namespace easy {
             class Assync_Tcp_client {
                 public:
                     Assync_Tcp_client();
-                    bool Connect(std::string ip="127.0.0.1",uint64_t port=3333,uint64_t max_buffer=1500,int domain=IPV4);
+                    bool Connect(std::string ip="127.0.0.1", uint64_t port=3333, uint64_t max_buffer=1500, int domain=IPV4);
                     bool Disconnect(){closesocket(this->listen_socket);return true;};
                     bool Send(MSG_Buffer buffer);
 
